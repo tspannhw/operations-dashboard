@@ -58,7 +58,7 @@ public class DataSourceService {
 				yolo.setBattery(res.getString("battery"));
 				yolo.setClass1(res.getString("class1"));
 				yolo.setCpu(res.getString("cpu"));
-				yolo.setDiskuage(res.getString("diskuage"));
+				yolo.setDiskuage(res.getString("diskusage"));
 				yolo.setEnd(res.getString("end"));
 				yolo.setHost(res.getString("host"));
 				yolo.setId(res.getString("id"));
