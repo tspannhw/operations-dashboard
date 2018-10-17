@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +30,6 @@ public class DataController {
 	     return servletRequest;
 	 }
 	
-	Logger logger = LoggerFactory.getLogger(DataController.class);
 
 	@Autowired
 	private DataSourceService dataSourceService;
@@ -46,7 +43,7 @@ public class DataController {
     	final String userIpAddress = getCurrentRequest().getRemoteAddr();
     	final String userAgent = getCurrentRequest().getHeader("user-agent");
     	final String userDisplay = String.format("Query:%s,IP:%s Browser:%s", query, userIpAddress, userAgent);
-    	logger.error(userDisplay);
+    	System.out.println("User:" + userDisplay);
         return value;
     }
 }

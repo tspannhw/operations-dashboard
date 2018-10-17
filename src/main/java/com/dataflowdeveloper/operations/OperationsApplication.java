@@ -2,8 +2,9 @@ package com.dataflowdeveloper.operations;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import javax.sql.DataSource;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -18,9 +19,10 @@ import org.springframework.context.annotation.Profile;
 @ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
-public class OperationsApplication {
+public class OperationsApplication  extends SpringBootServletInitializer  {
 
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
+		
 		SpringApplication.run(OperationsApplication.class, args);
 	}
 

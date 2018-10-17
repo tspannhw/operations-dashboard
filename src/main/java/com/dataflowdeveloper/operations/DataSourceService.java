@@ -1,5 +1,7 @@
 package com.dataflowdeveloper.operations;
 
+//https://www.baeldung.com/spring-boot-logging
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,16 +10,12 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component("DataSourceService")
 public class DataSourceService {
-
-	Logger logger = LoggerFactory.getLogger(DataSourceService.class);
 
 	@Autowired
 	public DataSource dataSource;
@@ -44,7 +42,6 @@ public class DataSourceService {
 
 		List<Inception> results = new ArrayList<>();
 		try {
-			logger.error("Query: " + query);
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection
 					.prepareStatement("select * from inception WHERE top1 like ? or top2 like ? or top3 like ? or top4 like ? or top5 like ? LIMIT ?");
@@ -70,9 +67,8 @@ public class DataSourceService {
 			connection = null;
 			inception = null;
 
-			logger.error("Size=" + results.size());
 		} catch (Exception e) {
-			logger.error("Error in search", e);
+			e.printStackTrace();
 		}
 
 		return results;

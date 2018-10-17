@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Apache Hive 3.1 Page</title>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.js"></script>	
+    <script src="./dist/js/ngAtp-bundle.js"></script>
+  <link href="./dist/css/ng-atp.css" rel="stylesheet">
+  <link href="data.css" rel="stylesheet">  
+</head>
+<body ng-app="myApp"> 
+<div style="align: center; overflow:auto; height:300px; width:800px" class="white-frame" id="searchText">
+<b>Test</b>
+<br><br>
+
+<form method="get" action="/index.html">
+Query: <input type="text" id="query" name="query" value=""> <input type="submit" name="Go">
+</form>
+</div>
+<br><br>
+    <div class="white-frame" id="crime2" ng-app ng-controller="MyCtrl"  style="align: center;overflow:auto;height:300px;width:800px">
+<b>Recent Reports:</b><br><p>
+<div ng-repeat="crime in crimelist">
+<div class='time'>{{crime.dispatchDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</div> - {{crime.textGeneralCode}} - {{crime.locationBlock}} <br></div>
+</div>
+</p>
+<br clear="all"/> <p align="center">
+    <div class="white-frame" id="tweets" ng-app ng-controller="PostsCtrlAjax"  style="align: center;overflow:auto;height:300px;width:800px">
+<b>test</b>
+<br>
+<p>
+
+<div ng-repeat="post in posts">
+<div class='time'>{{post.createdAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</div> -  {{post.text}} <br></div>
+</div>
+</p>
+<script language="javascript">
+var myApp = angular.module('myApp',['ngAtp']);
+
+function getQueryString() {
+  var result = {}, queryString = location.search.slice(1),
+      re = /([^&=]+)=([^&]*)/g, m;
+
+  while (m = re.exec(queryString)) {
+    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+  }
+
+  return result;
+}
+
+
+function PostsCtrlAjax($scope, $http)
+{
+	$http({method: 'GET', url: '/timeline/PhillyPolice'}).success(function(data)
+	{
+		$scope.posts = data; // response data 
+	});
+}
+
+function MyCtrl($scope, $http) 
+{
+	var query2 = getQueryString()["query"];
+    if (!query2) {
+    	query2 = "PhillyPolice";
+    }
+    var query1 = "/query/";
+    var query = query1.concat(query2);
+    
+	$http({method: 'GET', url: query}).success(function(data)
+	{
+		$scope.crimelist = data; // response data 
+	});
+}
+</script>
+
+<br><br>
+<p>
+
+    &copy; 2018
+
+
+</body>
+</html>
