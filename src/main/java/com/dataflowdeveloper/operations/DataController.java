@@ -36,10 +36,10 @@ public class DataController {
 	
    
     @RequestMapping("/query/{query}")
-    public List<Inception> query(
+    public List<Yolo> query(
     		@PathVariable(value="query") String query) 
     {
-    	List<Inception> value = dataSourceService.search(query);
+    	List<Yolo> value = dataSourceService.search(query);
     	final String userIpAddress = getCurrentRequest().getRemoteAddr();
     	final String userAgent = getCurrentRequest().getHeader("user-agent");
     	final String userDisplay = String.format("Query:%s,IP:%s Browser:%s", query, userIpAddress, userAgent);

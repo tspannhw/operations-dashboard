@@ -35,37 +35,55 @@ public class DataSourceService {
 	 *            - search msg
 	 * @return List of Inception
 	 */
-	public List<Inception> search(String query) {
+	public List<Yolo> search(String query) {
 		if (query == null) {
 			return null;
 		}
 
-		List<Inception> results = new ArrayList<>();
+		List<Yolo> results = new ArrayList<>();
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection
-					.prepareStatement("select * from inception WHERE top1 like ? or top2 like ? or top3 like ? or top4 like ? or top5 like ? LIMIT ?");
+					.prepareStatement("select * from gluoncvyolo WHERE imgname like ? or imgnamep like ? or class1 like ? or host like ? or te like ? LIMIT ?");
 			ps.setString(1, "%" + query + "%");
 			ps.setString(2, "%" + query + "%");
-                        ps.setString(3, "%" + query + "%");
-                        ps.setString(4, "%" + query + "%");
-                        ps.setString(5, "%" + query + "%");
+			ps.setString(3, "%" + query + "%");
+			ps.setString(4, "%" + query + "%");
+			ps.setString(5, "%" + query + "%");
 			ps.setInt(6, Integer.parseInt(querylimit));
 			ResultSet res = ps.executeQuery();
-			Inception inception = null;
+			Yolo yolo = null;
 			while (res.next()) {
-				inception = new Inception();
-				inception.setTop1(res.getString("top1"));
-				results.add(inception);
+				yolo = new Yolo();
+				yolo.setBattery(res.getString("battery"));
+				yolo.setClass1(res.getString("class1"));
+				yolo.setCpu(res.getString("cpu"));
+				yolo.setDiskuage(res.getString("diskuage"));
+				yolo.setEnd(res.getString("end"));
+				yolo.setHost(res.getString("host"));
+				yolo.setId(res.getString("id"));
+				yolo.setImgname(res.getString("imgname"));
+				yolo.setImgnamep(res.getString("imgnamep"));
+				yolo.setMemory(res.getString("memory"));
+				yolo.setPct1(res.getString("pct1"));
+				yolo.setShape(res.getString("shape"));
+				yolo.setSystemtime(res.getString("systemtime"));
+				yolo.setTe(res.getString("te"));
+				results.add(yolo);
 			}
 
+			
+			//CREATE EXTERNAL TABLE IF NOT EXISTS gluoncvyolo (imgname STRING, imgnamep STRING, class1 STRING, pct1 STRING, host STRING, shape STRING, `end` STRING,
+			// te STRING, battery INT, systemtime STRING, cpu DOUBLE, diskusage STRING, memory DOUBLE, id STRING) STORED AS ORC LOCATION '/gluoncvyolo'
+			
+			
 			res.close();
 			ps.close();
 			connection.close();
 			res = null;
 			ps = null;
 			connection = null;
-			inception = null;
+			yolo = null;
 
 		} catch (Exception e) {
 			e.printStackTrace();
