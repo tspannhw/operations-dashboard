@@ -1,0 +1,357 @@
+{
+ "type": "record",
+ "name": "status",
+ "namespace": "status",
+ "fields": [
+  {
+   "name": "statusId",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "timestampMillis",
+   "type": {
+    "type": "long",
+    "logicalType": "timestamp-millis"
+   }
+  },
+  {
+   "name": "timestamp",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "actorHostname",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "componentType",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "componentName",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "parentId",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "platform",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "application",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "componentId",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "project",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "activeThreadCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "flowFilesReceived",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "flowFilesSent",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "bytesReceived",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "bytesSent",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "queuedCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "bytesRead",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "bytesWritten",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "bytesTransferred",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "flowFilesTransferred",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "inputContentSize",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "outputContentSize",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "queuedContentSize",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "activeRemotePortCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "inactiveRemotePortCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "receivedContentSize",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "receivedCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "sentContentSize",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "sentCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "averageLineageDuration",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "inputBytes",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "inputCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "outputBytes",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "outputCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "sourceId",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "sourceName",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "destinationId",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "destinationName",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "maxQueuedBytes",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "maxQueuedCount",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "queuedBytes",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "backPressureBytesThreshold",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "backPressureObjectThreshold",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "isBackPressureEnabled",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "processorType",
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  {
+   "name": "averageLineageDurationMS",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "flowFilesRemoved",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "invocations",
+   "type": [
+    "long",
+    "null"
+   ]
+  },
+  {
+   "name": "processingNanos",
+   "type": [
+    "long",
+    "null"
+   ]
+  }
+ ]
+}
