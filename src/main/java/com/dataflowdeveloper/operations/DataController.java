@@ -43,7 +43,30 @@ public class DataController {
     	final String userIpAddress = getCurrentRequest().getRemoteAddr();
     	final String userAgent = getCurrentRequest().getHeader("user-agent");
     	final String userDisplay = String.format("Query:%s,IP:%s Browser:%s", query, userIpAddress, userAgent);
-    	System.out.println("User:" + userDisplay);
+    	System.out.println("Yolo User:" + userDisplay);
+        return value;
+    }
+    
+    @RequestMapping("/bulletin/{query}")
+    public List<Bulletin> bulletins(
+    		@PathVariable(value="query") String query) 
+    {
+    	List<Bulletin> value = dataSourceService.searchAllBulletins(query);
+    	final String userIpAddress = getCurrentRequest().getRemoteAddr();
+    	final String userAgent = getCurrentRequest().getHeader("user-agent");
+    	final String userDisplay = String.format("Query:%s,IP:%s Browser:%s", query, userIpAddress, userAgent);
+    	System.out.println("Bulletin User:" + userDisplay);
+        return value;
+    }
+    @RequestMapping("/status/{query}")
+    public List<Status> statuses(
+    		@PathVariable(value="query") String query) 
+    {
+    	List<Status> value = dataSourceService.searchStatus(query);
+    	final String userIpAddress = getCurrentRequest().getRemoteAddr();
+    	final String userAgent = getCurrentRequest().getHeader("user-agent");
+    	final String userDisplay = String.format("Query:%s,IP:%s Browser:%s", query, userIpAddress, userAgent);
+    	System.out.println("Status User:" + userDisplay);
         return value;
     }
 }

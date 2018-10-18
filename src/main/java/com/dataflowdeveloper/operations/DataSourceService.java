@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 @Component("DataSourceService")
 public class DataSourceService {
 
+	private static final String TABLE_NAME_BULLETINTYPE_BULLETIN = "bulletin";
+	private static final String TABLE_NAME_BULLETINTYPE_MEMORY = "memory";
 	@Autowired
 	public DataSource dataSource;
 
@@ -43,8 +45,8 @@ public class DataSourceService {
 		List<Yolo> results = new ArrayList<>();
 		try {
 			Connection connection = dataSource.getConnection();
-			PreparedStatement ps = connection
-					.prepareStatement("select * from gluoncvyolo WHERE imgname like ? or imgnamep like ? or class1 like ? or host like ? or te like ? LIMIT ?");
+			PreparedStatement ps = connection.prepareStatement(
+					"select * from gluoncvyolo WHERE imgname like ? or imgnamep like ? or class1 like ? or host like ? or te like ? LIMIT ?");
 			ps.setString(1, "%" + query + "%");
 			ps.setString(2, "%" + query + "%");
 			ps.setString(3, "%" + query + "%");
@@ -64,7 +66,7 @@ public class DataSourceService {
 				yolo.setId(res.getString("id"));
 				yolo.setImgname(res.getString("imgname"));
 				yolo.setImgnamep(res.getString("imgnamep"));
-				yolo.setMemory(res.getString("memory"));
+				yolo.setMemory(res.getString(TABLE_NAME_BULLETINTYPE_MEMORY));
 				yolo.setPct1(res.getString("pct1"));
 				yolo.setShape(res.getString("shape"));
 				yolo.setSystemtime(res.getString("systemtime"));
@@ -72,11 +74,11 @@ public class DataSourceService {
 				results.add(yolo);
 			}
 
-			
-			//CREATE EXTERNAL TABLE IF NOT EXISTS gluoncvyolo (imgname STRING, imgnamep STRING, class1 STRING, pct1 STRING, host STRING, shape STRING, `end` STRING,
-			// te STRING, battery INT, systemtime STRING, cpu DOUBLE, diskusage STRING, memory DOUBLE, id STRING) STORED AS ORC LOCATION '/gluoncvyolo'
-			
-			
+			// CREATE EXTERNAL TABLE IF NOT EXISTS gluoncvyolo (imgname STRING, imgnamep
+			// STRING, class1 STRING, pct1 STRING, host STRING, shape STRING, `end` STRING,
+			// te STRING, battery INT, systemtime STRING, cpu DOUBLE, diskusage STRING,
+			// memory DOUBLE, id STRING) STORED AS ORC LOCATION '/gluoncvyolo'
+
 			res.close();
 			ps.close();
 			connection.close();
@@ -84,6 +86,198 @@ public class DataSourceService {
 			ps = null;
 			connection = null;
 			yolo = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+
+	/**
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<Bulletin> searchMemoryBulletins(String query) {
+		if (query == null) {
+			return null;
+		}
+		
+		return searchBulletins(query, TABLE_NAME_BULLETINTYPE_MEMORY);
+	}
+	
+	/**
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<Bulletin> searchMainBulletins(String query) {
+		if (query == null) {
+			return null;
+		}
+		
+		return searchBulletins(query, TABLE_NAME_BULLETINTYPE_BULLETIN);
+	}
+	
+	/**
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<Bulletin> searchAllBulletins(String query) {
+		if (query == null) {
+			return null;
+		}
+		
+		List<Bulletin> allBulletins = searchBulletins(query, TABLE_NAME_BULLETINTYPE_BULLETIN);
+		
+		if ( allBulletins == null) {
+			allBulletins = new ArrayList<Bulletin>();
+		}
+		//faster than Hive 3 Union, there will be dupes
+		allBulletins.addAll( searchBulletins(query, TABLE_NAME_BULLETINTYPE_MEMORY) );
+
+		//could do sort and ... #TODO
+		
+		return allBulletins;
+	}
+	
+	
+	/**
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<Bulletin> searchBulletins(String query, String tableName) {
+		if (query == null) {
+			return null;
+		}
+
+		List<Bulletin> results = new ArrayList<>();
+		try {
+			Connection connection = dataSource.getConnection();
+			PreparedStatement ps = connection.prepareStatement(
+					"select * from " + tableName + " WHERE bulletinCategory like ? or bulletinMessage like ? or bulletinSourceName like ?  LIMIT ?");
+			ps.setString(1, "%" + query + "%");
+			ps.setString(2, "%" + query + "%");
+			ps.setString(3, "%" + query + "%");
+			ps.setInt(4, Integer.parseInt(querylimit));
+			ResultSet res = ps.executeQuery();
+			Bulletin bulletin = null;
+			while (res.next()) {
+				bulletin = new Bulletin();
+				bulletin.setBulletinCategory(res.getString("bulletinCategory"));
+
+				bulletin.setBulletinGroupId(res.getString("bulletinGroupId"));
+				bulletin.setBulletinGroupName(res.getString("bulletinGroupName"));
+				bulletin.setBulletinId(res.getString("bulletinId"));
+				bulletin.setBulletinLevel(res.getString("bulletinLevel"));
+				bulletin.setBulletinMessage(res.getString("bulletinMessage"));
+				bulletin.setBulletinNodeAddress(res.getString("bulletinNodeAddress"));
+				bulletin.setBulletinNodeId(res.getString("bulletinNodeId"));
+				bulletin.setBulletinSourceId(res.getString("bulletinSourceId"));
+				bulletin.setBulletinSourceName(res.getString("bulletinSourceName"));
+				bulletin.setBulletinSourceType(res.getString("bulletinSourceType"));
+				bulletin.setBulletinTimestamp(res.getString("bulletinTimestamp"));
+				results.add(bulletin);
+			}
+			res.close();
+			ps.close();
+			connection.close();
+			res = null;
+			ps = null;
+			connection = null;
+			bulletin = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+
+	/**
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public List<Status> searchStatus(String query) {
+		if (query == null) {
+			return null;
+		}
+		
+		
+		List<Status> results = new ArrayList<>();
+		try {
+			Connection connection = dataSource.getConnection();
+			PreparedStatement ps = connection.prepareStatement(
+					"select * from failure WHERE componentName like ? or processorType like ? or componentType like ?  LIMIT ?");
+			ps.setString(1, "%" + query + "%");
+			ps.setString(2, "%" + query + "%");
+			ps.setString(3, "%" + query + "%");
+			ps.setInt(4, Integer.parseInt(querylimit));
+			ResultSet res = ps.executeQuery();
+			Status status = null;
+			while (res.next()) {
+				status = new Status();
+				status.setActiveRemotePortCount(res.getString("activeRemotePortCount"));
+				status.setActiveThreadCount(res.getString("activeThreadCount"));
+				status.setActorHostname(res.getString("actorHostname"));
+				status.setApplication(res.getString("application"));
+				status.setAverageLineageDuration(res.getString("averagelineageduration"));
+				status.setAverageLineageDurationMS(res.getString("averagelineagedurationms"));
+				status.setBackPressureBytesThreshold(res.getString("backpressurebytesthreshold"));
+				status.setBackPressureObjectThreshold(res.getString("backpressureobjectthreshold"));
+				status.setBytesRead(res.getString("bytesread"));
+				status.setBytesReceived(res.getString("bytesreceived"));
+				status.setBytesSent(res.getString("bytessent"));
+				status.setBytesTransferred(res.getString("bytestransferred"));
+				status.setBytesWritten(res.getString("byteswritten"));
+				status.setComponentId(res.getString("componentid"));
+				status.setComponentName(res.getString("componentname"));
+				status.setComponentType(res.getString("componenttype"));
+				status.setDestinationId(res.getString("destinationId"));
+				status.setDestinationName(res.getString("destinationName"));
+				status.setFlowFilesReceived(res.getString("flowfilesreceived"));
+				status.setFlowFilesRemoved(res.getString("flowfilesremoved"));
+				status.setFlowFilesSent(res.getString("flowfilessent"));
+				status.setFlowFilesTransferred(res.getString("flowfilestransferred"));
+				status.setInactiveRemotePortCount(res.getString("inactiveremoteportcount"));
+				status.setInputBytes(res.getString("inputBytes"));
+				status.setInputContentSize(res.getString("inputcontentsize"));
+				status.setInvocations(res.getString("invocations"));
+				status.setIsBackPressureEnabled(res.getString("isbackpressureenabled"));
+				status.setMaxQueuedBytes(res.getString("maxqueuedbytes"));
+				status.setMaxQueuedCount(res.getString("maxqueuedcount"));
+				status.setTimestampMillis(res.getString("timestampmillis"));
+				status.setTimestamp(res.getString("timestamp"));
+				status.setProcessorType(res.getString("processorType"));
+				status.setParentId(res.getString("parentId"));
+				status.setPlatform(res.getString("platform"));
+				status.setProcessingNanos(res.getString("processingnanos"));
+				status.setReceivedContentSize(res.getString("receivedcontentsize"));
+				status.setReceivedCount(res.getString("receivedcount"));
+				status.setQueuedBytes(res.getString("queuedbytes"));
+				status.setQueuedContentSize(res.getString("queuedcontentsize"));
+				status.setQueuedCount(res.getString("queuedcount"));
+				status.setSentContentSize(res.getString("sentcontentsize"));
+				status.setSentCount(res.getString("sentcount"));
+				status.setSourceId(res.getString("sourceid"));
+				status.setSourceName(res.getString("sourcename"));
+				status.setStatusId(res.getString("statusid"));
+				status.setInputCount(res.getString("inputcount"));
+				status.setOutputBytes(res.getString("outputbytes"));
+								
+				results.add(status);
+			}
+			res.close();
+			ps.close();
+			connection.close();
+			res = null;
+			ps = null;
+			connection = null;
+			status = null;
 
 		} catch (Exception e) {
 			e.printStackTrace();
