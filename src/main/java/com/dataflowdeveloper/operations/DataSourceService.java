@@ -158,7 +158,7 @@ public class DataSourceService {
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection.prepareStatement(
-					"select * from " + tableName + " WHERE bulletinCategory like ? or bulletinMessage like ? or bulletinSourceName like ?  LIMIT ?");
+					"select * from " + tableName + " WHERE UPPER(bulletinCategory) like UPPER(?) or UPPER(bulletinMessage) like UPPER(?) or UPPER(bulletinSourceName) like UPPER(?)  LIMIT ?");
 			ps.setString(1, "%" + query + "%");
 			ps.setString(2, "%" + query + "%");
 			ps.setString(3, "%" + query + "%");
@@ -212,7 +212,7 @@ public class DataSourceService {
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection.prepareStatement(
-					"select * from failure WHERE componentName like ? or processorType like ? or componentType like ?  LIMIT ?");
+					"select * from failure WHERE UPPER(componentName) like UPPER(?) or UPPER(processorType) like UPPER(?) or UPPER(componentType) like UPPER(?)  LIMIT ?");
 			ps.setString(1, "%" + query + "%");
 			ps.setString(2, "%" + query + "%");
 			ps.setString(3, "%" + query + "%");
@@ -278,6 +278,66 @@ public class DataSourceService {
 			ps = null;
 			connection = null;
 			status = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+
+	/**
+	 * metrics
+	 * @param query
+	 * @return
+	 */
+	public List<Metric> searchMetrics() {
+		
+		List<Metric> results = new ArrayList<>();
+		try {
+			Connection connection = dataSource.getConnection();
+			PreparedStatement ps = connection.prepareStatement(
+					"select * from metrics LIMIT ? ORDER BY timestamp DESC");
+			ps.setInt(1, Integer.parseInt(querylimit));
+			ResultSet res = ps.executeQuery();
+			Metric metric = null;
+			while (res.next()) {
+				metric = new Metric();
+				metric.setActivethreads(res.getInt("activeThreads"));
+				metric.setAvailablecores(res.getInt("availableCores"));
+				metric.setBytesqueued(res.getInt("bytesQueued"));
+				metric.setBytesreadlast5minutes(res.getInt("BytesReadLast5Minutes"));
+				metric.setBytesreceivedlast5minutes(res.getInt("BytesReceivedLast5Minutes"));
+				metric.setByteswrittenlast5minutes(res.getInt("BytesWrittenLast5Minutes"));
+				metric.setFlowfilesqueued(res.getInt("FlowFilesQueued"));
+				metric.setFlowfilesreceivedlast5minutes(res.getInt("FlowFilesReceivedLast5Minutes"));
+				metric.setFlowfilessentlast5minutes(res.getInt("FlowFilesSentLast5Minutes"));
+				metric.setJvmdaemon_thread_count(res.getInt("JVMDaemon_Thread_Count"));
+				metric.setJvmfile_descriptor_usage(res.getInt("JVMFile_Descriptor_USage"));
+				metric.setJvmgcruns(res.getInt("JVMGCRUNS"));
+				metric.setJvmheap_usage(res.getInt("JVMHeap_usage"));
+				metric.setJvmheap_used(res.getInt("JVMHeap_Used"));
+				metric.setJvmnon_heap_usage(res.getInt("JVMNON_Heap_Usage"));
+				metric.setJvmthread_count(res.getInt("JVMThread_Count"));
+				metric.setJvmthread_statesblocked(res.getInt("JVMThread_statesblocked"));
+				metric.setJvmthread_statesrunnable(res.getInt("JVMThread_statesRunnable"));
+				metric.setJvmthread_statesterminated(res.getInt("JVMThread_statesTerminated"));
+				metric.setJvmthread_statestimed_waiting(res.getInt("JVMThread_statestimed_Waiting"));
+				metric.setJvmuptime(res.getInt("JVMuptime"));
+				metric.setLoadaverage1min(res.getInt("LoadAverage1Min"));
+				metric.setTimestamp(res.getInt("Timestamp"));
+				metric.setTotaltaskdurationnanoseconds(res.getInt("TotalTaskDurationNanoSeconds"));
+				metric.setTotaltaskdurationseconds(res.getInt("TotalTaskDurationSeconds"));
+								
+				results.add(metric);
+			}
+			res.close();
+			ps.close();
+			connection.close();
+			res = null;
+			ps = null;
+			connection = null;
+			metric = null;
 
 		} catch (Exception e) {
 			e.printStackTrace();

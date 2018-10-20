@@ -11,7 +11,7 @@
 </head>
 <body ng-app="myApp"> 
 <div style="align: center; overflow:auto; height:300px; width:800px" class="white-frame" id="searchText">
-<b>Test</b>
+<b>Operations Dashboard</b>
 <br><br>
 
 <form method="get" action="/index.html">
@@ -19,15 +19,12 @@ Query: <input type="text" id="query" name="query" value=""> <input type="submit"
 </form>
 </div>
 <br><br>
-    <div class="white-frame" id="crime2" ng-app ng-controller="MyCtrl"  style="align: center;overflow:auto;height:300px;width:800px">
+    <div class="white-frame" id="ops2" ng-app ng-controller="MyCtrl"  style="align: center;overflow:auto;height:300px;width:800px">
 <b>Recent Reports:</b><br><p>
-<div ng-repeat="crime in crimelist">
+<div ng-repeat="op in oplistt">
 <div class='time'>{{crime.dispatchDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</div> - {{crime.textGeneralCode}} - {{crime.locationBlock}} <br></div>
 </div>
 </p>
-<br clear="all"/> <p align="center">
-    <div class="white-frame" id="tweets" ng-app ng-controller="PostsCtrlAjax"  style="align: center;overflow:auto;height:300px;width:800px">
-<b>test</b>
 <br>
 <p>
 
@@ -52,7 +49,7 @@ function getQueryString() {
 
 function PostsCtrlAjax($scope, $http)
 {
-	$http({method: 'GET', url: '/timeline/PhillyPolice'}).success(function(data)
+	$http({method: 'GET', url: '/bulletin/'}).success(function(data)
 	{
 		$scope.posts = data; // response data 
 	});
@@ -62,9 +59,9 @@ function MyCtrl($scope, $http)
 {
 	var query2 = getQueryString()["query"];
     if (!query2) {
-    	query2 = "PhillyPolice";
+    	query2 = "error";
     }
-    var query1 = "/query/";
+    var query1 = "/bulletin/";
     var query = query1.concat(query2);
     
 	$http({method: 'GET', url: query}).success(function(data)

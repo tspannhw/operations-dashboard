@@ -69,4 +69,16 @@ public class DataController {
     	System.out.println("Status User:" + userDisplay);
         return value;
     }
+    
+    @RequestMapping("/metrics/")
+    public List<Metric> metrics() 
+    {
+    	List<Metric> value = dataSourceService.searchMetrics();
+    	final String userIpAddress = getCurrentRequest().getRemoteAddr();
+    	final String userAgent = getCurrentRequest().getHeader("user-agent");
+    	final String userDisplay = String.format("IP:%s Browser:%s", userIpAddress, userAgent);
+    	System.out.println("Metrics User:" + userDisplay);
+        return value;
+    }
+    
 }
