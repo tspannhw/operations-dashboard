@@ -19,6 +19,7 @@ public class DataSourceService {
 
 	private static final String TABLE_NAME_BULLETINTYPE_BULLETIN = "bulletin";
 	private static final String TABLE_NAME_BULLETINTYPE_MEMORY = "memory";
+	
 	@Autowired
 	public DataSource dataSource;
 
@@ -158,10 +159,10 @@ public class DataSourceService {
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection.prepareStatement(
-					"select * from " + tableName + " WHERE UPPER(bulletinCategory) like UPPER(?) or UPPER(bulletinMessage) like UPPER(?) or UPPER(bulletinSourceName) like UPPER(?)  LIMIT ?");
-			ps.setString(1, "%" + query + "%");
-			ps.setString(2, "%" + query + "%");
-			ps.setString(3, "%" + query + "%");
+					"select * from " + tableName + " WHERE UPPER(bulletinCategory) like ? or UPPER(bulletinMessage) like ? or UPPER(bulletinSourceName) like ?   LIMIT ?");
+			ps.setString(1, "%" + query.toUpperCase() + "%");
+			ps.setString(2, "%" + query.toUpperCase() + "%");
+			ps.setString(3, "%" + query.toUpperCase() + "%");
 			ps.setInt(4, Integer.parseInt(querylimit));
 			ResultSet res = ps.executeQuery();
 			Bulletin bulletin = null;
@@ -212,10 +213,10 @@ public class DataSourceService {
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection.prepareStatement(
-					"select * from failure WHERE UPPER(componentName) like UPPER(?) or UPPER(processorType) like UPPER(?) or UPPER(componentType) like UPPER(?)  LIMIT ?");
-			ps.setString(1, "%" + query + "%");
-			ps.setString(2, "%" + query + "%");
-			ps.setString(3, "%" + query + "%");
+					"select * from failure WHERE UPPER(componentName) like ? or UPPER(processorType) like ? or UPPER(componentType) like ?  LIMIT ?");
+			ps.setString(1, "%" + query.toUpperCase() + "%");
+			ps.setString(2, "%" + query.toUpperCase() + "%");
+			ps.setString(3, "%" + query.toUpperCase() + "%");
 			ps.setInt(4, Integer.parseInt(querylimit));
 			ResultSet res = ps.executeQuery();
 			Status status = null;
@@ -295,9 +296,12 @@ public class DataSourceService {
 		
 		List<Metric> results = new ArrayList<>();
 		try {
+			if (querylimit == null ) {
+				querylimit = "100";
+			}
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ps = connection.prepareStatement(
-					"select * from metrics LIMIT ? ORDER BY timestamp DESC");
+					"select * from metrics   LIMIT ? ");
 			ps.setInt(1, Integer.parseInt(querylimit));
 			ResultSet res = ps.executeQuery();
 			Metric metric = null;

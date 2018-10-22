@@ -3,10 +3,6 @@
 <head>
   <meta charset="utf-8">
   <title>Apache Hive 3.1 Page</title>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.js"></script>	
-    <script src="./dist/js/ngAtp-bundle.js"></script>
-  <link href="./dist/css/ng-atp.css" rel="stylesheet">
   <link href="data.css" rel="stylesheet">  
 </head>
 <body ng-app="myApp"> 
@@ -18,59 +14,98 @@
 Query: <input type="text" id="query" name="query" value=""> <input type="submit" name="Go">
 </form>
 </div>
-<br><br>
-    <div class="white-frame" id="ops2" ng-app ng-controller="MyCtrl"  style="align: center;overflow:auto;height:300px;width:800px">
-<b>Recent Reports:</b><br><p>
-<div ng-repeat="op in oplistt">
-<div class='time'>{{crime.dispatchDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</div> - {{crime.textGeneralCode}} - {{crime.locationBlock}} <br></div>
-</div>
-</p>
-<br>
-<p>
 
-<div ng-repeat="post in posts">
-<div class='time'>{{post.createdAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</div> -  {{post.text}} <br></div>
+  <h1>Metrics</h1>
+
+<div id="output" name="output" style="align: center; overflow:auto; height:400px; width:800px" class="white-frame">
+  <ul id="metrics"></ul>  
 </div>
-</p>
+
+
+<div id="promoNode"></div>
+	
+	<p>Check out the console to see changes in battery status!</p>
+	
+	<h2>Your Battery</h2><br />
+	<div id="battery" style="border: 1px solid #000; width: 200px;">
+		
+		<div id="batteryLevel" style="min-height: 30px; font-size: 40px; text-align:center; color: #000; background: #ddd;"></div>
+		
+	</div><br />
+	
+	<p>
+		<strong>Charging Status:</strong> <span id="chargingStatus"></span>
+	</p>
+	
+</div>
+
+
 <script language="javascript">
-var myApp = angular.module('myApp',['ngAtp']);
 
-function getQueryString() {
-  var result = {}, queryString = location.search.slice(1),
-      re = /([^&=]+)=([^&]*)/g, m;
+   var myList = document.querySelector('ul');
 
-  while (m = re.exec(queryString)) {
-    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-  }
+   var myRequest = new Request('./metrics/');
 
-  return result;
-}
-
-
-function PostsCtrlAjax($scope, $http)
-{
-	$http({method: 'GET', url: '/bulletin/'}).success(function(data)
-	{
-		$scope.posts = data; // response data 
-	});
-}
-
-function MyCtrl($scope, $http) 
-{
-	var query2 = getQueryString()["query"];
-    if (!query2) {
-    	query2 = "error";
+fetch(myRequest)
+  .then(function(response) { return response.json(); })
+  .then(function(data) {
+    for (var i = 0; i < data.length; i++) {
+      var listItem = document.createElement('li');
+      listItem.innerHTML = '<strong>Timestamp' + data[i].timestamp + '</strong>  Flow Files Received: ' +
+                           data[i].flowfilesreceivedlast5minutes + ' JVM Heap Usage:' + data[i].jvmheap_usage +
+                           ' Threads Waiting:' + data[i].jvmthread_statestimed_waiting +
+                           ' Thread Count: ' + data[i].jvmthread_count +
+                           ' Total Task Duration: ' + data[i].totaltaskdurationnanoseconds +
+                           ' Bytes Read Last 5 min: ' + data[i].bytesreadlast5minutes +
+                           ' Flow Files Queued: ' + data[i].flowfilesqueued +
+                           ' Bytes Queued: ' + data[i].bytesqueued;
+                           
+      myList.appendChild(listItem);
     }
-    var query1 = "/bulletin/";
-    var query = query1.concat(query2);
-    
-	$http({method: 'GET', url: query}).success(function(data)
-	{
-		$scope.crimelist = data; // response data 
-	});
-}
+  });
+  
 </script>
+<script>
+		// A few useful battery properties
+		if(navigator.getBattery) {
+			navigator.getBattery().then(function(battery) {
 
+				console.warn("Battery charging: ", battery.charging);
+				console.warn("Initial battery level: ", battery.level);
+
+				var node = document.getElementById("batteryLevel");
+				var change = function(e) {
+					console.warn("Battery level change: ", battery.level);
+					var perc = (battery.level * 100) + "%";
+					node.style.width = perc;
+					node.innerHTML = perc;
+				};
+				
+				var chargeChange = function() {
+					console.warn("Battery charge change: ", battery.charging);
+					var chargeNode = document.getElementById("chargingStatus");
+					chargeNode.innerHTML = "<span style='color:" + (battery.charging ? "green" : "red") + "'>" + (battery.charging ? "Charging" : "NOT Charging") + "</span>";
+				};
+
+				battery.addEventListener("chargingchange", chargeChange, false);
+				battery.addEventListener("chargingtimechange", function(e) {
+					console.warn("Battery charge time change: ", battery.chargingTime);
+				}, false);
+				battery.addEventListener("dischargingtimechange", function(e) {
+					console.warn("Battery discharging time change: ", battery.dischargingTime);
+				}, false);
+				battery.addEventListener("levelchange", change, false);
+
+				change();
+				chargeChange();
+				
+			});
+		}
+		else {
+			console.warn("Your browser does not have the navigator.mozBattery object");
+		}
+		
+	</script>
 <br><br>
 <p>
 
